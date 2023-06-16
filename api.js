@@ -46,7 +46,7 @@ router.post("/shorten", (req, res) => {
         .then(() => {
           return res.status(200).json({
             shortCode: shortCode,
-            message: `The shortened URL is http://localhost/${shortCode}`,
+            message: `The shortened URL is http://localhost:5000${shortCode}`,
           });
         })
         .catch((err) => {
@@ -63,10 +63,38 @@ router.post("/shorten", (req, res) => {
 });
 
 // @route     GET api/:shortCode
-// @desc      GET originalUrl using shortCode
+// @desc      redirect originalUrl using shortCode
 // @access
 // Body       shortCode
-// Response   originalUrl
-// router.get("/:shortCode", (req, res) => {});
+// Response   redirect to originalUrl
+router.get("/:shortCode", (req, res) => {
+  const { shortCode } = req.params;
+  urlCollection
+    .findOne({ shortCode: shortCode })
+    .then((found) => {
+      if (!found) {
+        return res.status(404).json({
+          message: `URL for ${shortCode} does not exist in the database`,
+        });
+      }
+
+      if (found.expiration && Date.now() > found.expiration.getTime()) {
+        return res.status(400).json({
+          message: "This shortened URL has expired",
+        });
+      }
+
+      found.clicks++;
+      found.save();
+
+      res.redirect(found.originalUrl);
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: "An error occurred while retrieving the URL",
+        error: err,
+      });
+    });
+});
 
 export default router;
