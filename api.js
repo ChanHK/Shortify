@@ -17,7 +17,7 @@ function generateShortCode() {
   return shortCode;
 }
 
-// @route     POST  api/shorten
+// @route     POST  /shorten
 // @desc      POST  shorten url
 // @access
 // Body       originalUrl to be shorten, customCode, expiration
@@ -62,7 +62,7 @@ router.post("/shorten", (req, res) => {
     });
 });
 
-// @route     GET api/:shortCode
+// @route     GET /:shortCode
 // @desc      redirect originalUrl using shortCode
 // @access
 // Body       shortCode

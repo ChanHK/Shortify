@@ -34,7 +34,7 @@ connect(mongoUrl, {
 app.use(throttle);
 app.use(limiter);
 
-app.use("/shortify/api", api);
+app.use("/", api);
 
 app.listen(port, () => {
   console.log("listening on port " + port);
