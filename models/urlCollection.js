@@ -1,15 +1,16 @@
 import { Schema, model } from "mongoose";
 
-const shortenUrlSchema = new Schema({
 //   accountId: {
 //     type: Schema.Types.ObjectId,
 //     ref: "Account",
 //   },
+
+const shortenUrlSchema = new Schema({
   originalUrl: {
     type: String,
     required: true,
   },
-  shortUrl: {
+  shortCode: {
     type: String,
     required: true,
   },

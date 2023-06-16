@@ -1,9 +1,12 @@
 import express from "express";
 import { connect } from "mongoose";
+import bodyParser from "body-parser";
 import api from "./api.js";
 
 const app = express();
 const port = 5000;
+
+app.use(bodyParser.json());
 
 const mongoUrl = "mongodb://0.0.0.0:27017/shortify";
 connect(mongoUrl, {
