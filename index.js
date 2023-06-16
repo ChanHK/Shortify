@@ -1,5 +1,6 @@
 import express from "express";
 import slowDown from "express-slow-down";
+import rateLimit from "express-rate-limit";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
 import api from "./api.js";
@@ -7,11 +8,16 @@ import api from "./api.js";
 const app = express();
 const port = 5000;
 
-const throttlingOptions = {
+const throttle= slowDown({
   windowMs: 60 * 1000, // Throttling window: 1 minute
   delayAfter: 100, // Start delaying responses after 100 requests
   delayMs: 500, // Delay each response by 500 milliseconds
-};
+});
+
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // Throttling window: 1 minute
+  max: 5, // Maximum number of requests per windowMs
+});
 
 app.use(bodyParser.json());
 
@@ -25,7 +31,8 @@ connect(mongoUrl, {
   })
   .catch((err) => console.log(err));
 
-app.use(slowDown(throttlingOptions));
+app.use(throttle);
+app.use(limiter);
 
 app.use("/shortify/api", api);
 

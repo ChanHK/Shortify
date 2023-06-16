@@ -46,7 +46,7 @@ router.post("/shorten", (req, res) => {
         .then(() => {
           return res.status(200).json({
             shortCode: shortCode,
-            message: `The shortened URL is http://localhost:5000${shortCode}`,
+            message: `The shortened URL is http://localhost:5000/${shortCode}`,
           });
         })
         .catch((err) => {
