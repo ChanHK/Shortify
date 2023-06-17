@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import shorcodeApi from "./apis/shortcode.js";
 import authenticateApi from "./apis/authentication.js";
 import dotenv from "dotenv";
+import cors from "cors";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: ".env" });
@@ -25,8 +26,6 @@ const limiter = rateLimit({
   max: 20, // Maximum number of requests per windowMs
 });
 
-app.use(bodyParser.json());
-
 connect(process.env.DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -36,6 +35,10 @@ connect(process.env.DB, {
   })
   .catch((err) => console.log(err));
 
+
+app.use(bodyParser.json());
+// app.use(cors());
+app.use(cors({ origin: 'https://shortify-u856.onrender.com' }));
 app.use(throttle);
 app.use(limiter);
 
