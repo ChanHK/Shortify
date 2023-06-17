@@ -20,7 +20,7 @@ const throttle = slowDown({
 
 const limiter = rateLimit({
   windowMs: 60 * 1000, // Throttling window: 1 minute
-  max: 5, // Maximum number of requests per windowMs
+  max: 20, // Maximum number of requests per windowMs
 });
 
 app.use(bodyParser.json());
