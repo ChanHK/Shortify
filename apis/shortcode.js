@@ -22,7 +22,7 @@ function generateShortCode() {
 
 // @route     POST  /shorten
 // @desc      POST  shorten url
-// @access
+// @access    Private
 // Body       originalUrl to be shorten, customCode, expiration
 // Response   shortCode
 router.post("/shorten", authMiddleware, (req, res) => {
@@ -31,50 +31,63 @@ router.post("/shorten", authMiddleware, (req, res) => {
 
   const { originalUrl, customCode, expiration } = req.body;
 
-  const shortCode = customCode || generateShortCode();
+  let shortCode = customCode || generateShortCode();
+
+  // Check if customCode already exists in the database
+  if (customCode) {
+    urlCollection
+      .findOne({ shortCode: customCode })
+      .then((found) => {
+        if (found) {
+          // Replace customCode with a newly generated short code
+          shortCode = generateShortCode();
+        }
+
+        createShortUrl(originalUrl, shortCode, expiration, req, res);
+      })
+      .catch((err) => {
+        return res
+          .status(500)
+          .json({
+            message: "Failed to check custom code existence",
+            error: err,
+          });
+      });
+  } else {
+    createShortUrl(originalUrl, shortCode, expiration, req, res);
+  }
+});
+
+function createShortUrl(originalUrl, shortCode, expiration, req, res) {
+  const shortenUrl = {
+    accountId: req.user.id,
+    originalUrl: originalUrl,
+    shortCode: shortCode,
+    createdAt: new Date(),
+    expiration: expiration,
+  };
 
   urlCollection
-    .findOne({ originalUrl: originalUrl })
-    .then((found) => {
-      if (found) {
-        return res.status(400).json({ message: "This URL already exists" });
-      }
-
-      const shortenUrl = {
-        accountId: req.user.id,
-        originalUrl: originalUrl,
+    .create(shortenUrl)
+    .then(() => {
+      return res.status(200).json({
         shortCode: shortCode,
-        createdAt: new Date(),
-        expiration: expiration,
-      };
-
-      urlCollection
-        .create(shortenUrl)
-        .then(() => {
-          return res.status(200).json({
-            shortCode: shortCode,
-            message: `The shortened URL is http://localhost:5000/${shortCode}`,
-          });
-        })
-        .catch((err) => {
-          return res
-            .status(500)
-            .json({ message: "Failed to create shortened URL", error: err });
-        });
+        message: `The shortened URL is http://localhost:5000/${shortCode}`,
+      });
     })
     .catch((err) => {
       return res
         .status(500)
         .json({ message: "Failed to create shortened URL", error: err });
     });
-});
+}
 
-// @route     GET /:shortCode
+// @route     GET /shorten/:shortCode
 // @desc      redirect originalUrl using shortCode
-// @access
+// @access    Private
 // Param      shortCode
 // Response   redirect to originalUrl
-router.get("/:shortCode", authMiddleware, (req, res) => {
+router.get("/shorten/:shortCode", authMiddleware, (req, res) => {
   const { shortCode } = req.params;
   urlCollection
     .findOne({ shortCode: shortCode })
@@ -106,7 +119,7 @@ router.get("/:shortCode", authMiddleware, (req, res) => {
 
 // @route     delete /:shortCode
 // @desc      delete urlCollection base on shortcode
-// @access
+// @access    Private
 // Param      shortCode
 // Response   outcome messages
 router.delete("/delete/:shortcode", authMiddleware, (req, res) => {
@@ -128,6 +141,41 @@ router.delete("/delete/:shortcode", authMiddleware, (req, res) => {
     .catch((err) => {
       res.status(500).json({
         message: "An error occurred while deleting the URL",
+        error: err,
+      });
+    });
+});
+
+// @route     GET /shorten
+// @desc      get all urlcolletion of an account
+// @access    Private
+// Response   urlcollections
+router.get("/shorten", authMiddleware, (req, res) => {
+  urlCollection
+    .find({ accountId: req.user.id })
+    .then((foundUrls) => {
+      if (foundUrls.length === 0) {
+        return res.status(404).json({
+          message: "No URLs found for the account",
+        });
+      }
+
+      const urls = foundUrls.map((url) => {
+        const { originalUrl, shortCode, createdAt, expiration, clicks } = url;
+        return {
+          originalUrl,
+          shortCode,
+          createdAt,
+          expiration,
+          clicks,
+        };
+      });
+
+      res.status(200).json(urls);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: "An error occurred while retrieving the URL details",
         error: err,
       });
     });
