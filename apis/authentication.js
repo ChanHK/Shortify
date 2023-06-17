@@ -52,4 +52,35 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// @route     POST  /login
+// @desc      login
+// @access    Public
+// Body       email and password
+// Response   json web token
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await account.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Account does not exist" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_TOKEN_KEY, {
+      expiresIn: 7200, // 2 hours in seconds
+    });
+
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ message: "Error during login", error: err });
+  }
+});
+
 export default router;
