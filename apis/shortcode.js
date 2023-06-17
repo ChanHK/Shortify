@@ -1,4 +1,5 @@
 import { Router } from "express";
+import account from "../models/account.js";
 import urlCollection from "../models/urlCollection.js";
 import authMiddleware from "../middleware/authentication.js";
 
@@ -180,5 +181,30 @@ router.get("/shorten", authMiddleware, (req, res) => {
       });
     });
 });
+
+// @route     delete /account
+// @desc      delete account and related urlcollection
+// @access    Private
+// Response   message
+router.delete("/account", authMiddleware, (req, res) => {
+  const accountId = req.user.id;
+
+  urlCollection
+    .deleteMany({ accountId: accountId })
+    .then(() => {
+      account
+        .findByIdAndRemove(accountId)
+        .then(() => {
+          res.status(200).json({ message: "Account and associated URL collections deleted successfully" });
+        })
+        .catch((err) => {
+          res.status(500).json({ message: "Failed to delete account", error: err });
+        });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "Failed to delete URL collections", error: err });
+    });
+});
+
 
 export default router;
