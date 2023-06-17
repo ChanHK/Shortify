@@ -47,12 +47,10 @@ router.post("/shorten", authMiddleware, (req, res) => {
         createShortUrl(originalUrl, shortCode, expiration, req, res);
       })
       .catch((err) => {
-        return res
-          .status(500)
-          .json({
-            message: "Failed to check custom code existence",
-            error: err,
-          });
+        return res.status(500).json({
+          message: "Failed to check custom code existence",
+          error: err,
+        });
       });
   } else {
     createShortUrl(originalUrl, shortCode, expiration, req, res);
@@ -71,10 +69,7 @@ function createShortUrl(originalUrl, shortCode, expiration, req, res) {
   urlCollection
     .create(shortenUrl)
     .then(() => {
-      return res.status(200).json({
-        shortCode: shortCode,
-        message: `The shortened URL is http://localhost:5000/${shortCode}`,
-      });
+      return res.status(200).json({ shortCode: shortCode });
     })
     .catch((err) => {
       return res
@@ -195,16 +190,22 @@ router.delete("/account", authMiddleware, (req, res) => {
       account
         .findByIdAndRemove(accountId)
         .then(() => {
-          res.status(200).json({ message: "Account and associated URL collections deleted successfully" });
+          res.status(200).json({
+            message:
+              "Account and associated URL collections deleted successfully",
+          });
         })
         .catch((err) => {
-          res.status(500).json({ message: "Failed to delete account", error: err });
+          res
+            .status(500)
+            .json({ message: "Failed to delete account", error: err });
         });
     })
     .catch((err) => {
-      res.status(500).json({ message: "Failed to delete URL collections", error: err });
+      res
+        .status(500)
+        .json({ message: "Failed to delete URL collections", error: err });
     });
 });
-
 
 export default router;
