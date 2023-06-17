@@ -10,23 +10,23 @@ function isEmpty(value) {
 }
 
 function validateInput(data) {
-  let errors = {};
+  let message = "";
 
   data.email = !isEmpty(data.email) ? data.email : "";
   data.password = !isEmpty(data.password) ? data.password : "";
 
-  if (Validator.isEmpty(data.email)) errors.email = "Email field is required";
-  else if (!Validator.isEmail(data.email)) errors.email = "Email is invalid";
+  if (Validator.isEmpty(data.email)) message += "Email field is required.";
+  else if (!Validator.isEmail(data.email)) message += "Email is invalid.";
 
   if (Validator.isEmpty(data.password)) {
-    errors.password = "Password field is required";
+    message += " Password field is required.";
   } else if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
-    errors.password = "Password must be at least 6, maximum 30 characters";
+    message += " Password must be at least 6, maximum 30 characters.";
   }
 
   return {
-    errors,
-    isValid: isEmpty(errors),
+    message,
+    isValid: isEmpty(message),
   };
 }
 

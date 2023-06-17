@@ -10,37 +10,37 @@ function isEmpty(value) {
 }
 
 function validateShortenInput(data) {
-  let errors = {};
+  let message = "";
 
   data.originalUrl = !isEmpty(data.originalUrl) ? data.originalUrl : "";
   data.customCode = !isEmpty(data.customCode) ? data.customCode : "";
   data.expiration = !isEmpty(data.expiration) ? data.expiration : "";
 
   if (Validator.isEmpty(data.originalUrl)) {
-    errors.originalUrl = "Original URL field is required";
+    message += " Original URL field is required.";
   }
 
   if (!Validator.isURL(data.originalUrl)) {
-    errors.originalUrl = "Invalid URL format";
+    message += " Invalid URL format.";
   }
 
   if (
     !Validator.isEmpty(data.customCode) &&
     !Validator.isLength(data.customCode, { min: 1, max: 10 })
   ) {
-    errors.customCode = "Custom code must be between 1 and 10 characters";
+    message += " Custom code must be between 1 and 10 characters.";
   }
 
   if (
     !Validator.isEmpty(data.expiration) &&
     !Validator.isAfter(data.expiration)
   ) {
-    errors.expiration = "Expiration date must be greater than today";
+    message += " Expiration date must be greater than today.";
   }
 
   return {
-    errors,
-    isValid: isEmpty(errors),
+    message,
+    isValid: isEmpty(message),
   };
 }
 

@@ -13,8 +13,8 @@ const router = Router();
 // Body       email and password
 // Response   json web token
 router.post("/register", async (req, res) => {
-  const { errors, isValid } = validateInput(req.body);
-  if (!isValid) return res.status(400).json(errors);
+  const { message, isValid } = validateInput(req.body);
+  if (!isValid) return res.status(400).json(message);
 
   try {
     const { email, password } = req.body;
@@ -62,8 +62,8 @@ router.post("/register", async (req, res) => {
 // Body       email and password
 // Response   json web token
 router.post("/login", async (req, res) => {
-  const { errors, isValid } = validateInput(req.body);
-  if (!isValid) return res.status(400).json(errors);
+  const { message, isValid } = validateInput(req.body);
+  if (!isValid) return res.status(400).json(message);
 
   try {
     const { email, password } = req.body;
