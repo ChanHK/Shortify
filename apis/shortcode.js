@@ -28,7 +28,7 @@ function generateShortCode() {
 // Response   shortCode
 router.post("/shorten", authMiddleware, (req, res) => {
   const { message, isValid } = validateShortenInput(req.body);
-  if (!isValid) return res.status(400).json(message);
+  if (!isValid) return res.status(400).json({message: message});
 
   const { originalUrl, customCode, expiration } = req.body;
 
