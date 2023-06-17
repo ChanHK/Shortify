@@ -2,6 +2,8 @@ import { Router } from "express";
 import urlCollection from "../models/urlCollection.js";
 import authMiddleware from "../middleware/authentication.js";
 
+import validateShortenInput from "./validations/shorten.js";
+
 const router = Router();
 
 function generateShortCode() {
@@ -24,6 +26,9 @@ function generateShortCode() {
 // Body       originalUrl to be shorten, customCode, expiration
 // Response   shortCode
 router.post("/shorten", authMiddleware, (req, res) => {
+  const { errors, isValid } = validateShortenInput(req.body);
+  if (!isValid) return res.status(400).json(errors);
+
   const { originalUrl, customCode, expiration } = req.body;
 
   const shortCode = customCode || generateShortCode();
