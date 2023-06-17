@@ -37,8 +37,7 @@ connect(process.env.DB, {
 
 
 app.use(bodyParser.json());
-// app.use(cors());
-app.use(cors({ origin: 'https://shortify-u856.onrender.com' }));
+app.use(cors());
 app.use(throttle);
 app.use(limiter);
 
