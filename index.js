@@ -3,12 +3,16 @@ import slowDown from "express-slow-down";
 import rateLimit from "express-rate-limit";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
-import api from "./api.js";
+import shorcodeApi from "./apis/shortcode.js";
+import authenticateApi from "./apis/authentication.js";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env" });
 
 const app = express();
 const port = 5000;
 
-const throttle= slowDown({
+const throttle = slowDown({
   windowMs: 60 * 1000, // Throttling window: 1 minute
   delayAfter: 100, // Start delaying responses after 100 requests
   delayMs: 500, // Delay each response by 500 milliseconds
@@ -21,8 +25,7 @@ const limiter = rateLimit({
 
 app.use(bodyParser.json());
 
-const mongoUrl = "mongodb://0.0.0.0:27017/shortify";
-connect(mongoUrl, {
+connect(process.env.DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -34,7 +37,8 @@ connect(mongoUrl, {
 app.use(throttle);
 app.use(limiter);
 
-app.use("/", api);
+app.use("/", authenticateApi);
+app.use("/", shorcodeApi);
 
 app.listen(port, () => {
   console.log("listening on port " + port);
