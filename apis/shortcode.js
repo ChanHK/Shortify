@@ -80,10 +80,10 @@ function createShortUrl(originalUrl, shortCode, expiration, req, res) {
 
 // @route     GET /shorten/:shortCode
 // @desc      redirect originalUrl using shortCode
-// @access    Private
+// @access    Public
 // Param      shortCode
 // Response   redirect to originalUrl
-router.get("/shorten/:shortCode", authMiddleware, (req, res) => {
+router.get("/shorten/:shortCode", (req, res) => {
   const { shortCode } = req.params;
   urlCollection
     .findOne({ shortCode: shortCode })
