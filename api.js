@@ -65,7 +65,7 @@ router.post("/shorten", (req, res) => {
 // @route     GET /:shortCode
 // @desc      redirect originalUrl using shortCode
 // @access
-// Body       shortCode
+// Param      shortCode
 // Response   redirect to originalUrl
 router.get("/:shortCode", (req, res) => {
   const { shortCode } = req.params;
@@ -92,6 +92,35 @@ router.get("/:shortCode", (req, res) => {
     .catch((err) => {
       return res.status(500).json({
         message: "An error occurred while retrieving the URL",
+        error: err,
+      });
+    });
+});
+
+// @route     delete /:shortCode
+// @desc      delete urlCollection base on shortcode
+// @access
+// Param      shortCode
+// Response   outcome messages
+router.delete("/delete/:shortcode", (req, res) => {
+  const { shortcode } = req.params;
+
+  urlCollection
+    .findOneAndDelete({ shortCode: shortcode })
+    .then((deletedUrl) => {
+      if (!deletedUrl) {
+        return res.status(404).json({
+          message: `URL with shortcode ${shortcode} not found`,
+        });
+      }
+
+      res.status(200).json({
+        message: `URL with shortcode ${shortcode} has been deleted successfully`,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: "An error occurred while deleting the URL",
         error: err,
       });
     });
