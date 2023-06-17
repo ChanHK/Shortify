@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import account from "../models/account.js";
 
+import validateInput from "./validations/authentication.js";
+
 const router = Router();
 
 // @route     POST  /register
@@ -11,9 +13,11 @@ const router = Router();
 // Body       email and password
 // Response   json web token
 router.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { errors, isValid } = validateInput(req.body);
+  if (!isValid) return res.status(400).json(errors);
 
   try {
+    const { email, password } = req.body;
     const existingUser = await account.findOne({ email: email });
 
     if (existingUser) {
@@ -58,6 +62,9 @@ router.post("/register", async (req, res) => {
 // Body       email and password
 // Response   json web token
 router.post("/login", async (req, res) => {
+  const { errors, isValid } = validateInput(req.body);
+  if (!isValid) return res.status(400).json(errors);
+
   try {
     const { email, password } = req.body;
 
