@@ -7,7 +7,9 @@ import shorcodeApi from "./apis/shortcode.js";
 import authenticateApi from "./apis/authentication.js";
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env" });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: ".env" });
+}
 
 const app = express();
 const port = 5000;
