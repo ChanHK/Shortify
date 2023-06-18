@@ -7,12 +7,14 @@ import shorcodeApi from "./apis/shortcode.js";
 import authenticateApi from "./apis/authentication.js";
 import dotenv from "dotenv";
 import cors from "cors";
+import http from "http";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: ".env" });
 }
 
 const app = express();
+const server = http.createServer(app);
 const port = 5000;
 
 const throttle = slowDown({
@@ -35,7 +37,6 @@ connect(process.env.DB, {
   })
   .catch((err) => console.log(err));
 
-
 app.use(bodyParser.json());
 app.use(cors());
 app.use(throttle);
@@ -44,6 +45,8 @@ app.use(limiter);
 app.use("/", authenticateApi);
 app.use("/", shorcodeApi);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log("listening on port " + port);
 });
+
+export default server;
