@@ -28,21 +28,17 @@ function generateShortCode() {
 // Response   shortCode
 router.post("/shorten", authMiddleware, (req, res) => {
   const { message, isValid } = validateShortenInput(req.body);
-  if (!isValid) return res.status(400).json({message: message});
+  if (!isValid) return res.status(400).json({ message: message });
 
   const { originalUrl, customCode, expiration } = req.body;
 
   let shortCode = customCode || generateShortCode();
 
-  // Check if customCode already exists in the database
   if (customCode) {
     urlCollection
       .findOne({ shortCode: customCode })
       .then((found) => {
-        if (found) {
-          // Replace customCode with a newly generated short code
-          shortCode = generateShortCode();
-        }
+        if (found) shortCode = generateShortCode();
 
         createShortUrl(originalUrl, shortCode, expiration, req, res);
       })
