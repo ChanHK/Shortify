@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../index.js";
 import account from "../../models/account.js";
 
-describe("Register API", () => {
+describe("POST /register", () => {
   it("should register a new user", async () => {
     const user = {
       email: "test@example.com",

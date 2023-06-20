@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest --config jest.config.js --detectOpenHandles",
+    "test": "jest --config jest.config.js --detectOpenHandles --runInBand",
     "start": "nodemon index.js",
     "render:test": "npm test"
   },

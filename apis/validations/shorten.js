@@ -18,9 +18,7 @@ function validateShortenInput(data) {
 
   if (Validator.isEmpty(data.originalUrl)) {
     message += " Original URL field is required.";
-  }
-
-  if (!Validator.isURL(data.originalUrl)) {
+  } else if (!Validator.isURL(data.originalUrl)) {
     message += " Invalid URL format.";
   }
 
