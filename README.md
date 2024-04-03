@@ -69,6 +69,4 @@ The URL Shortener Microservice provides the following APIs:
    - Input Parameters: None
    - Output: Returns a success message upon successful deletion.
 
-## Contact Information
 
-For any inquiries or support related to the URL Shortener Microservice, please contact us at shortify2023@gmail.com.
